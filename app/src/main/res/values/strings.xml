@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Weather</string>
+    <string name="new_game">New game</string>
+    <string name="help">Help</string>
+    <string name="file">File</string>
+    <string name="create_new">Create</string>
+    <string name="open">Open</string>
+    <string name="tab">\u0009\u0009\u0009\u0009</string>
+</resources>

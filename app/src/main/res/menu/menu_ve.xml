@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/new_game"
+        android:icon="@android:drawable/ic_menu_add"
+        android:title="@string/new_game"
+        app:showAsAction="always" />
+    <item android:id="@+id/help"
+        android:icon="@android:drawable/ic_menu_help"
+        android:title="@string/help" />
+    <item android:id="@+id/file"
+        android:title="@string/file" >
+        <!-- "file" submenu -->
+        <menu>
+            <item android:id="@+id/create_new"
+                android:title="@string/create_new" />
+            <item android:id="@+id/open"
+                android:title="@string/open" />
+        </menu>
+    </item>
+</menu>

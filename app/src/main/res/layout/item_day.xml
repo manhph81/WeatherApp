@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="2"
+    android:orientation="horizontal"
+    >
+    <LinearLayout
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textStyle="bold"
+            android:textSize="30dp"
+            android:layout_gravity="center"
+            android:text="Date"
+            android:id="@+id/textViewDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"></TextView>
+        <TextView
+            android:textSize="25dp"
+            android:text="State"
+            android:id="@+id/textViewState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"></TextView>
+
+    </LinearLayout>
+    <LinearLayout
+        android:weightSum="3"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:src="@mipmap/ic_launcher_round"
+            android:gravity="center"
+            android:id="@+id/imgState"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="100dp"></ImageView>
+        <TextView
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:text="Max"
+            android:id="@+id/textViewMaxTemperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"></TextView>
+        <TextView
+            android:gravity="center"
+            android:layout_weight="1"
+            android:text="Min"
+            android:id="@+id/textViewMinTemperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"></TextView>
+
+    </LinearLayout>
+</LinearLayout>
