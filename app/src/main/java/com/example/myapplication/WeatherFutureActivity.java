@@ -46,14 +46,14 @@ public class WeatherFutureActivity extends AppCompatActivity {
             city = "saigon";
         }
         txtCity.setText(city);
-        ArrayList<Weather> arrayListWeather = new ArrayList<>();
-//        getData(city);
+        arrayListWeather = new ArrayList<>();
+        getData(city);
 
 
-        arrayListWeather.add(new Weather("a","b","c","d","e"));
-        arrayListWeather.add(new Weather("a","b","c","d","e"));
-        arrayListWeather.add(new Weather("a","b","c","d","e"));
-        arrayListWeather.add(new Weather("a","b","c","d","e"));
+//        arrayListWeather.add(new Weather("a","b","c","d","e"));
+//        arrayListWeather.add(new Weather("a","b","c","d","e"));
+//        arrayListWeather.add(new Weather("a","b","c","d","e"));
+//        arrayListWeather.add(new Weather("a","b","c","d","e"));
         Log.d("result", String.valueOf(arrayListWeather));
         itemAdapter = new ItemAdapter(arrayListWeather,getApplicationContext());
         recyclerView.setAdapter(itemAdapter);
