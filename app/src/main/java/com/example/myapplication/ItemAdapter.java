@@ -1,55 +1,61 @@
 package com.example.myapplication;
 
+
 import android.content.Context;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 
-public class ItemAdapter extends BaseAdapter {
+public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
+    @NonNull
+    ArrayList<Weather> weathers;
     Context context;
-    ArrayList<Weather> arrayList;
 
-    @Override
-    public int getCount() {
-        return arrayList.size();
+    public ItemAdapter(@NonNull ArrayList<Weather> weathers, Context context) {
+        this.weathers = weathers;
+        this.context = context;
     }
 
     @Override
-    public Object getItem(int i) {
-        return arrayList.get(i);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        View itemView = layoutInflater.inflate(R.layout.item_day,parent,false);
+        return new ViewHolder(itemView);
     }
 
     @Override
-    public long getItemId(int i) {
-        return 0;
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        holder.txtDate.setText(weathers.get(position).getDate());
+//        holder.img.setImage(weathers.get(position).getState());
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        view = inflater.inflate(R.layout.item_day,null);
+    public int getItemCount() {
+        return  weathers.size();
+    }
 
-        Weather weather = arrayList.get(i);
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        TextView txtDate,txtState, txtTempMax, txtTempMin;
+        ImageView imgState;
+        public ViewHolder(View v) {
+            super(v);
 
-        TextView txtDay = (TextView )view.findViewById(R.id.textViewDay);
-        TextView txtState = (TextView )view.findViewById(R.id.textViewState);
-        TextView txtMaxTemperature = (TextView )view.findViewById(R.id.textViewMaxTemperature);
-        TextView txtMinTemperature = (TextView )view.findViewById(R.id.textViewMinTemperature);
-        ImageView imgState = (ImageView) view.findViewById(R.id.imgState);
+            txtDate = (TextView) v.findViewById(R.id.textViewDay);
+            txtState = (TextView) v.findViewById(R.id.textViewState);
+            txtTempMax = (TextView) v.findViewById(R.id.textViewMaxTemperature);
+            txtTempMin = (TextView) v.findViewById(R.id.textViewMinTemperature);
 
-        txtDay.setText(Weather.date);
-        txtState.setText(Weather.state);
-        txtMaxTemperature.setText(Weather.maxTemp + "°C");
-        txtMinTemperature.setText(Weather.minTemp+ "°C");
-
-
-
-        return view;
+            imgState = (ImageView) v.findViewById(R.id.imgState);
+        }
     }
 }

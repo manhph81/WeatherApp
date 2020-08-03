@@ -1,17 +1,57 @@
 package com.example.myapplication;
 
 public class Weather {
-    public static String date;
-    public static String state;
-    public static String status;
-    public static String image;
-    public static String maxTemp;
-    public static  String minTemp;
-    public Weather(String date, String status, String image, String maxTemp, String minTemp){
+    public  String date;
+    public  String status;
+    public  String image;
+    public  String maxTemp;
+    public  String minTemp;
+
+    public Weather(String date, String status, String image, String maxTemp, String minTemp) {
         this.date = date;
         this.status = status;
         this.image = image;
         this.maxTemp = maxTemp;
+        this.minTemp = minTemp;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getMaxTemp() {
+        return maxTemp;
+    }
+
+    public void setMaxTemp(String maxTemp) {
+        this.maxTemp = maxTemp;
+    }
+
+    public String getMinTemp() {
+        return minTemp;
+    }
+
+    public void setMinTemp(String minTemp) {
         this.minTemp = minTemp;
     }
 }
