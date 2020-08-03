@@ -36,7 +36,10 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.txtDate.setText(weathers.get(position).getDate());
-//        holder.img.setImage(weathers.get(position).getState());
+        holder.txtState.setText(weathers.get(position).getStatus());
+        holder.txtTempMax.setText(weathers.get(position).getMaxTemp());
+        holder.txtTempMin.setText(weathers.get(position).getMinTemp());
+//        Glide.with(R.layout.item_day).load("http://openweathermap.org/img/wn/"+weathers.get(position).getImage()+".png").into(holder.imgState);
     }
 
     @Override
@@ -54,7 +57,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
             txtState = (TextView) v.findViewById(R.id.textViewState);
             txtTempMax = (TextView) v.findViewById(R.id.textViewMaxTemperature);
             txtTempMin = (TextView) v.findViewById(R.id.textViewMinTemperature);
-
             imgState = (ImageView) v.findViewById(R.id.imgState);
         }
     }

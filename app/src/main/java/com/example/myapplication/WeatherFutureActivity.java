@@ -46,10 +46,17 @@ public class WeatherFutureActivity extends AppCompatActivity {
             city = "saigon";
         }
         txtCity.setText(city);
-        getData(city);
+        ArrayList<Weather> arrayListWeather = new ArrayList<>();
+//        getData(city);
+
+
+        arrayListWeather.add(new Weather("a","b","c","d","e"));
+        arrayListWeather.add(new Weather("a","b","c","d","e"));
+        arrayListWeather.add(new Weather("a","b","c","d","e"));
+        arrayListWeather.add(new Weather("a","b","c","d","e"));
         Log.d("result", String.valueOf(arrayListWeather));
-//        itemAdapter = new ItemAdapter(arrayListWeather,getApplicationContext());
-//        recyclerView.setAdapter(itemAdapter);
+        itemAdapter = new ItemAdapter(arrayListWeather,getApplicationContext());
+        recyclerView.setAdapter(itemAdapter);
     }
 
     private void init() {
@@ -115,7 +122,6 @@ public class WeatherFutureActivity extends AppCompatActivity {
                 String tempMin = String.valueOf(b.intValue());
 
                 arrayListWeather.add(new Weather(Day,status,icon,tempMax,tempMin));
-                Log.d("result", String.valueOf(new Weather(Day,status,icon,tempMax,tempMin)));
 
             }
         } catch (JSONException e) {
