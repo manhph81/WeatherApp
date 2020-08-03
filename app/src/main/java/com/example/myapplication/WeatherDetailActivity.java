@@ -43,7 +43,6 @@ public class WeatherDetailActivity extends AppCompatActivity {
         init();
         Intent intent = getIntent();
         city = intent.getStringExtra("city");
-        Log.d("input:",city);
         getCurrentWeatherData(city);
         btnWeatherFuture.setOnClickListener(new View.OnClickListener(){
             @Override

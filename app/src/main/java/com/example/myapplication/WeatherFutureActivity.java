@@ -47,16 +47,11 @@ public class WeatherFutureActivity extends AppCompatActivity {
         }
         txtCity.setText(city);
         arrayListWeather = new ArrayList<>();
-        getData(city);
 
-
-//        arrayListWeather.add(new Weather("a","b","c","d","e"));
-//        arrayListWeather.add(new Weather("a","b","c","d","e"));
-//        arrayListWeather.add(new Weather("a","b","c","d","e"));
-//        arrayListWeather.add(new Weather("a","b","c","d","e"));
-        Log.d("result", String.valueOf(arrayListWeather));
         itemAdapter = new ItemAdapter(arrayListWeather,getApplicationContext());
         recyclerView.setAdapter(itemAdapter);
+        getData(city);
+
     }
 
     private void init() {
@@ -69,8 +64,9 @@ public class WeatherFutureActivity extends AppCompatActivity {
     }
 
     private void getData(String data){
+        Log.d("data",data);
         RequestQueue requestQueue = Volley.newRequestQueue(WeatherFutureActivity.this);
-        String url = "http://api.openweathermap.org/data/2.5/weather?q="+data+"&units=metric&appid=77780b9269d06ce0066641430cd0645d";
+        String url = "https://samples.openweathermap.org/data/2.5/forecast/daily?q="+data+"&appid=77780b9269d06ce0066641430cd0645d";
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -99,10 +95,10 @@ public class WeatherFutureActivity extends AppCompatActivity {
             for (int i = 0; i < jsonArrayList.length() ; i++) {
                 JSONObject jsonObjectList = jsonArrayList.getJSONObject(i);
 
-                String day = jsonObject.getString("dt");
+                String day = jsonObjectList.getString("dt");
                 long l = Long.valueOf(day);
                 Date date = new Date(l*1000L);
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE yyyy-MM-dd HH-mm-ss");
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE yyyy-MM-dd");
                 String Day = simpleDateFormat.format(date);
 
                 JSONArray jsonArrayWeather = jsonObjectList.getJSONArray("weather");
@@ -123,7 +119,9 @@ public class WeatherFutureActivity extends AppCompatActivity {
 
                 arrayListWeather.add(new Weather(Day,status,icon,tempMax,tempMin));
 
+
             }
+            itemAdapter.notifyDataSetChanged();
         } catch (JSONException e) {
             e.printStackTrace();
         }
