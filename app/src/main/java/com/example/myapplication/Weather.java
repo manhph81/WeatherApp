@@ -1,11 +1,21 @@
 package com.example.myapplication;
 
 public class Weather {
+    public  String city;
     public  String date;
     public  String status;
     public  String image;
     public  String maxTemp;
     public  String minTemp;
+
+    public Weather(String city, String date, String status, String image, String maxTemp, String minTemp) {
+        this.city = city;
+        this.date = date;
+        this.status = status;
+        this.image = image;
+        this.maxTemp = maxTemp;
+        this.minTemp = minTemp;
+    }
 
     public Weather(String date, String status, String image, String maxTemp, String minTemp) {
         this.date = date;
@@ -15,6 +25,13 @@ public class Weather {
         this.minTemp = minTemp;
     }
 
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
     public String getDate() {
         return date;
     }

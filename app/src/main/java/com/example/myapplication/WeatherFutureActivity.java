@@ -3,13 +3,11 @@ package com.example.myapplication;
 import android.content.Intent;
 import android.os.Bundle;
 
-import android.util.JsonReader;
 import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,7 +17,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.JsonObject;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,15 +40,16 @@ public class WeatherFutureActivity extends AppCompatActivity {
         init();
         Intent intent = getIntent();
         String city = intent.getStringExtra("city");
+        String lon = intent.getStringExtra("lon");
+        String lat = intent.getStringExtra("lat");
         if(city.equals("")){
             city = "saigon";
         }
         txtCity.setText(city);
         arrayListWeather = new ArrayList<>();
-
+        getData(lon,lat);
         itemAdapter = new ItemAdapter(arrayListWeather,getApplicationContext());
         recyclerView.setAdapter(itemAdapter);
-        getData(city);
 
     }
 
@@ -60,13 +59,15 @@ public class WeatherFutureActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         recyclerView.setLayoutManager(linearLayoutManager);
+        DividerItemDecoration decoration = new DividerItemDecoration(this,linearLayoutManager.getOrientation());
+        recyclerView.addItemDecoration(decoration);
+
 
     }
 
-    private void getData(String data){
-        Log.d("data",data);
+    private void getData(String lon,String lat){
         RequestQueue requestQueue = Volley.newRequestQueue(WeatherFutureActivity.this);
-        String url = "https://samples.openweathermap.org/data/2.5/forecast/daily?q="+data+"&appid=77780b9269d06ce0066641430cd0645d";
+        String url = "https://api.openweathermap.org/data/2.5/onecall?lat="+lat+"&lon="+lon+"&%20exclude=daily&appid=77780b9269d06ce0066641430cd0645d";
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -87,18 +88,16 @@ public class WeatherFutureActivity extends AppCompatActivity {
     private void loadData(String response) {
         try {
             JSONObject jsonObject = new JSONObject(response);
-            JSONObject jsonObjectCity = jsonObject.getJSONObject("city");
-            String name = jsonObjectCity.getString("name");
-            txtCity.setText(name);
 
-            JSONArray jsonArrayList = jsonObject.getJSONArray("list");
+            JSONArray jsonArrayList = jsonObject.getJSONArray("daily");
             for (int i = 0; i < jsonArrayList.length() ; i++) {
                 JSONObject jsonObjectList = jsonArrayList.getJSONObject(i);
 
                 String day = jsonObjectList.getString("dt");
                 long l = Long.valueOf(day);
                 Date date = new Date(l*1000L);
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE yyyy-MM-dd");
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                SimpleDateFormat simpleDayFormat = new SimpleDateFormat("EEEE");
                 String Day = simpleDateFormat.format(date);
 
                 JSONArray jsonArrayWeather = jsonObjectList.getJSONArray("weather");
@@ -111,8 +110,8 @@ public class WeatherFutureActivity extends AppCompatActivity {
                 String max = jsonObjectTemp.getString("max");
                 String min = jsonObjectTemp.getString("min");
 
-                Double a= Double.valueOf(max);
-                Double b= Double.valueOf(min);
+                Double a= Double.valueOf(max)-Double.valueOf(270);
+                Double b= Double.valueOf(max)-Double.valueOf(270);
 
                 String tempMax = String.valueOf(a.intValue());
                 String tempMin = String.valueOf(b.intValue());

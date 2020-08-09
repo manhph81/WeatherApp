@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,7 +21,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,6 +36,8 @@ public class WeatherDetailActivity extends AppCompatActivity {
     TextView txtCity, txtState, txtTemperature, txtHumidity, txtCloud, txtWind, txtDate;
     ImageView imgIcon;
     String city="saigon";
+    String lon="";
+    String lat="";
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,12 +45,17 @@ public class WeatherDetailActivity extends AppCompatActivity {
         init();
         Intent intent = getIntent();
         city = intent.getStringExtra("city");
+        if(city==""){
+            city = "saigon";
+        }
         getCurrentWeatherData(city);
         btnWeatherFuture.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(WeatherDetailActivity.this, WeatherFutureActivity.class);
                 intent.putExtra("city",city);
+                intent.putExtra("lon",lon);
+                intent.putExtra("lat",lat);
                 startActivity(intent);
             }
         });
@@ -63,6 +70,7 @@ public class WeatherDetailActivity extends AppCompatActivity {
             long l = Long.valueOf(day);
             Date date = new Date(l*1000L);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE yyyy-MM-dd HH-mm-ss");
+
             String Day = simpleDateFormat.format(date);
             txtDate.setText(Day);
             //load Array Weather
@@ -92,6 +100,9 @@ public class WeatherDetailActivity extends AppCompatActivity {
             String cloud = jsonObjectClouds.getString("all");
             txtCloud.setText(cloud+"%");
 
+            JSONObject jsonObjectCoord = jsonObject.getJSONObject("coord");
+            lon = jsonObjectCoord.getString("lon");
+            lat = jsonObjectCoord.getString("lat");
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -99,7 +110,6 @@ public class WeatherDetailActivity extends AppCompatActivity {
     }
     private void getCurrentWeatherData(String data){
         RequestQueue requestQueue = Volley.newRequestQueue(WeatherDetailActivity.this);
-        Log.d("abc","abc");
         String url = "http://api.openweathermap.org/data/2.5/weather?q="+data+"&units=metric&appid=77780b9269d06ce0066641430cd0645d";
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -112,7 +122,7 @@ public class WeatherDetailActivity extends AppCompatActivity {
                 new Response.ErrorListener(){
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
+                        Toast.makeText(WeatherDetailActivity.this,"City is not found.",Toast.LENGTH_SHORT).show();
                     }
                 });
         requestQueue.add(stringRequest);
