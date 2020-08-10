@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -28,6 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 
@@ -35,6 +38,9 @@ public class Search extends Fragment {
     EditText edtSearch;
     Button btnOK;
     Database database;
+    private RecyclerView recyclerView;
+    ArrayList<Weather> arrayListWeather;
+    ItemAdapter itemAdapter;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
 
@@ -53,8 +59,28 @@ public class Search extends Fragment {
                     Toast.makeText(getActivity(),"Enter the city",Toast.LENGTH_SHORT).show();
                 }
 
-                removeFrag();
+                getActivity().findViewById(R.id.frameContent).setVisibility(View.INVISIBLE);
+                getActivity().findViewById(R.id.my_recycler_view).setVisibility(View.VISIBLE);
 
+                arrayListWeather = new ArrayList<>();
+
+                database = new Database(getActivity(),"weather.sqlite",null,1);
+                database.QueryData("CREATE TABLE IF NOT EXISTS Weather(City varchar(200) primary key,Status varchar(200),Icon varchar(200),MaxTemp varchar(200),MinTemp varchar(200))");
+                Cursor data = database.GetData("SELECT * FROM Weather");
+                while(data.moveToNext()){
+                    String city = data.getString(0);
+                    String status = data.getString(1);
+                    String image = data.getString(2);
+                    String maxTemp = data.getString(3);
+                    String minTemp = data.getString(4);
+                    arrayListWeather.add(new Weather(city,city,status,image,maxTemp,minTemp));
+                }
+
+                itemAdapter = new ItemAdapter(arrayListWeather,getActivity().getApplicationContext());
+                recyclerView = getActivity().findViewById(R.id.my_recycler_view);
+                recyclerView.setAdapter(itemAdapter);
+
+                removeFrag();
 
             }
         });

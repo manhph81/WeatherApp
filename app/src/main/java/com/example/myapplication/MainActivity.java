@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 
@@ -75,12 +76,15 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.newWeather:
+                findViewById(R.id.frameContent).setVisibility(View.VISIBLE);
                 // Create new fragment and transaction
                 Search search = new Search();
                 fragmentTransaction.add(R.id.frameContent, search,"fragSearch");
+                fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
 
                 Toast.makeText(this,"New",Toast.LENGTH_SHORT).show();
+                findViewById(R.id.my_recycler_view).setVisibility(View.INVISIBLE);
 
                 break;
             case R.id.help:
