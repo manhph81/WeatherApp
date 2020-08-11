@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import com.anychart.AnyChart;
 import com.anychart.AnyChartView;
+import com.anychart.chart.common.dataentry.DataEntry;
 import com.anychart.chart.common.dataentry.ValueDataEntry;
 import com.anychart.charts.Cartesian;
 import com.anychart.core.cartesian.series.Line;
@@ -29,6 +30,7 @@ public class Fragment_Chart extends Fragment {
     private static ArrayList<Weather> array;
     private AnyChartView anyChartView;
     private ArrayList<CustomDataEntry> seriesData;
+
 
     public static Fragment_Chart newInstance(ArrayList<Weather> arrayListWeather) {
 
@@ -55,11 +57,7 @@ public class Fragment_Chart extends Fragment {
 
     private void init(View view) {
         anyChartView = view.findViewById(R.id.any_chart_view);
-        seriesData = new ArrayList<CustomDataEntry>();
-    }
-
-    private void handleClick(){
-
+        seriesData = new ArrayList<>();
     }
 
     private void loadLinechart() {
