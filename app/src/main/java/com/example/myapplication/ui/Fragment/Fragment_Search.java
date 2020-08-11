@@ -1,8 +1,6 @@
-package com.example.myapplication;
+package com.example.myapplication.ui.Fragment;
 
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,7 +13,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -23,69 +20,64 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.bumptech.glide.Glide;
+import com.example.myapplication.R;
+import com.example.myapplication.database.Database;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 
-public class Search extends Fragment {
+public class Fragment_Search extends Fragment {
+    public static final String SQL_NAME = "weather.sqlite";
+    public static final String API_ID = "77780b9269d06ce0066641430cd0645d";
+
     EditText edtSearch;
     Button btnOK;
     Database database;
-    private RecyclerView recyclerView;
-    ArrayList<Weather> arrayListWeather;
-    ItemAdapter itemAdapter;
-    FragmentManager fragmentManager;
-    FragmentTransaction fragmentTransaction;
+
+    public static Fragment_Search newInstance() {
+
+        Bundle args = new Bundle();
+
+        Fragment_Search fragment = new Fragment_Search();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_search,container,false);
+        super.onCreateView(inflater, container, savedInstanceState);
+        return inflater.inflate(R.layout.fragment_search, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         init(view);
+        handleClick();
+    }
+
+    private void handleClick(){
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String content = edtSearch.getText().toString();
                 if(!content.equals("")){
                     getCurrentWeatherData(content);
+                    hintKeyboad(edtSearch);
                 }else{
                     Toast.makeText(getActivity(),"Enter the city",Toast.LENGTH_SHORT).show();
+                    getActivity().onBackPressed();
                 }
-
-                getActivity().findViewById(R.id.frameContent).setVisibility(View.INVISIBLE);
-                getActivity().findViewById(R.id.my_recycler_view).setVisibility(View.VISIBLE);
-
-                arrayListWeather = new ArrayList<>();
-
-                database = new Database(getActivity(),"weather.sqlite",null,1);
-                database.QueryData("CREATE TABLE IF NOT EXISTS Weather(City varchar(200) primary key,Status varchar(200),Icon varchar(200),MaxTemp varchar(200),MinTemp varchar(200))");
-                Cursor data = database.GetData("SELECT * FROM Weather");
-                while(data.moveToNext()){
-                    String city = data.getString(0);
-                    String status = data.getString(1);
-                    String image = data.getString(2);
-                    String maxTemp = data.getString(3);
-                    String minTemp = data.getString(4);
-                    arrayListWeather.add(new Weather(city,city,status,image,maxTemp,minTemp));
-                }
-
-                itemAdapter = new ItemAdapter(arrayListWeather,getActivity().getApplicationContext());
-                recyclerView = getActivity().findViewById(R.id.my_recycler_view);
-                recyclerView.setAdapter(itemAdapter);
-
-                removeFrag();
-
             }
         });
-        return view;
     }
+
     private void loadData(String response){
         try {
             JSONObject jsonObject = new JSONObject(response);
@@ -108,41 +100,60 @@ public class Search extends Fragment {
             String maxTemp = jsonObjectTemp.getString("temp_max");
             String minTemp = jsonObjectTemp.getString("temp_min");
 
+            int a= (int) Math.round(Double.valueOf(maxTemp));
+            int b= (int) Math.round(Double.valueOf(minTemp));
 
-
-            database = new Database(getActivity(),"weather.sqlite",null,1);
-            database.QueryData("CREATE TABLE IF NOT EXISTS Weather(City varchar(200) primary key ,Status varchar(200),Icon varchar(200),MaxTemp varchar(200),MinTemp varchar(200))");
-            //Insert
-            String sql = insert(city,status,icon,maxTemp,minTemp);
-            database.QueryData(sql);
-
-            removeFrag();
-
+            writeDatabase(city,status,icon,String.valueOf(a),String.valueOf(b));
 
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
-    private void removeFrag() {
-        Toast.makeText(getActivity(),"Remove",Toast.LENGTH_SHORT).show();
-        fragmentManager = getFragmentManager();
-        fragmentTransaction = fragmentManager.beginTransaction();
-        Search search = (Search) getFragmentManager().findFragmentByTag("fragSearch");
-        fragmentTransaction.remove(search);
+
+    private void writeDatabase(String city, String status, String icon, String maxTemp, String minTemp){
+        database = new Database(getActivity(),SQL_NAME,null,1);
+        database.QueryData("CREATE TABLE IF NOT EXISTS Weather(City varchar(200) primary key ,Status varchar(200),Icon varchar(200),MaxTemp varchar(200),MinTemp varchar(200))");
+        //Insert
+        if(!isExistsCity(city)){
+            String sql = insertDatabase(city,status,icon,maxTemp,minTemp);
+            database.QueryData(sql);
+        }
+
+        getActivity().onBackPressed();
     }
+
+    private boolean isExistsCity(String city) {
+        boolean result = false;
+        Cursor data = database.GetData("SELECT * FROM Weather");
+        while(data.moveToNext()){
+            if(city.equals(data.getString(0))){
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+
+    private void hintKeyboad(EditText edt){
+        edt.setCursorVisible(false);
+        edt.setFocusableInTouchMode(false);
+        edt.setFocusable(false);
+    }
+
     private String delete(){
         String result = "DROP TABLE Weather";
         return result;
     }
-    private String insert(String city, String status, String image, String maxTemp, String minTemp){
+
+    private String insertDatabase(String city, String status, String image, String maxTemp, String minTemp){
         String result="INSERT INTO Weather VALUES("+"\""+city+"\","+"\""+status+"\","+"\""+image+"\","+"\""+maxTemp+"\","+"\""+minTemp+"\""+")";
         return result;
     }
+
     private void getCurrentWeatherData(String data){
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        Log.d("abc","abc");
-        String url = "http://api.openweathermap.org/data/2.5/weather?q="+data+"&units=metric&appid=77780b9269d06ce0066641430cd0645d";
+        String url = "http://api.openweathermap.org/data/2.5/weather?q="+data+"&units=metric&appid="+API_ID;
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -159,6 +170,7 @@ public class Search extends Fragment {
                 });
         requestQueue.add(stringRequest);
     }
+
     private void init(View view) {
         edtSearch = (EditText) view.findViewById(R.id.edtSearch);
         btnOK = (Button) view.findViewById(R.id.btnOK);

@@ -3,7 +3,6 @@ package com.example.myapplication;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.myapplication.database.Database;
+import com.example.myapplication.ui.weatherDetailScreen.WeatherDetailActivity;
 
 import java.util.ArrayList;
 
@@ -43,6 +44,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         holder.txtTempMin.setText(weathers.get(position).getMinTemp() + "°C");
 
         final String city = weathers.get(position).getCity();
+        Glide.with(context).load("http://openweathermap.org/img/wn/"+weathers.get(position).getImage()+".png").into(holder.imgState);
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -61,7 +64,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
                 return false;
             }
         });
-        Glide.with(context).load("http://openweathermap.org/img/wn/"+weathers.get(position).getImage()+".png").into(holder.imgState);
+
     }
 
     @Override

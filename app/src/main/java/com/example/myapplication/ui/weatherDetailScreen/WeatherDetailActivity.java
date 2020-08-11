@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.ui.weatherDetailScreen;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,9 +11,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -21,6 +18,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.example.myapplication.R;
+import com.example.myapplication.ui.BaseActivity;
+import com.example.myapplication.ui.weatherFutureScreen.WeatherFutureActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,12 +30,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-public class WeatherDetailActivity extends AppCompatActivity {
-
+public class WeatherDetailActivity extends BaseActivity {
     Button btnWeatherFuture;
     TextView txtCity, txtState, txtTemperature, txtHumidity, txtCloud, txtWind, txtDate;
     ImageView imgIcon;
-    String city="saigon";
+    String city;
     String lon="";
     String lat="";
     @Override
@@ -43,22 +42,9 @@ public class WeatherDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.weather_detail);
         init();
-        Intent intent = getIntent();
-        city = intent.getStringExtra("city");
-        if(city==""){
-            city = "saigon";
-        }
-        getCurrentWeatherData(city);
-        btnWeatherFuture.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(WeatherDetailActivity.this, WeatherFutureActivity.class);
-                intent.putExtra("city",city);
-                intent.putExtra("lon",lon);
-                intent.putExtra("lat",lat);
-                startActivity(intent);
-            }
-        });
+        city = getDataIntentCity();
+        getCurrentWeatherDataOneDay(city);
+        handleClick();
     }
     private void loadData(String response){
         try {
@@ -108,9 +94,9 @@ public class WeatherDetailActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-    private void getCurrentWeatherData(String data){
+    private void getCurrentWeatherDataOneDay(String data){
         RequestQueue requestQueue = Volley.newRequestQueue(WeatherDetailActivity.this);
-        String url = "http://api.openweathermap.org/data/2.5/weather?q="+data+"&units=metric&appid=77780b9269d06ce0066641430cd0645d";
+        String url = "http://api.openweathermap.org/data/2.5/weather?q="+data+"&units=metric&appid="+API_ID;
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -137,6 +123,26 @@ public class WeatherDetailActivity extends AppCompatActivity {
         txtWind = (TextView) findViewById(R.id.textViewWind);
         txtDate = (TextView) findViewById(R.id.textViewDate);
         imgIcon = (ImageView) findViewById(R.id.imageView);
+    }
+    private void handleClick() {
+        btnWeatherFuture.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(WeatherDetailActivity.this, WeatherFutureActivity.class);
+                intent.putExtra("city",city);
+                intent.putExtra("lon",lon);
+                intent.putExtra("lat",lat);
+                startActivity(intent);
+            }
+        });
+    }
+    private String getDataIntentCity() {
+        Intent intent = getIntent();
+        String data = intent.getStringExtra("city");
+        if(data==""){
+            data = DEFAULT_CITY;
+        }
+        return data;
     }
 
 }
