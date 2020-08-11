@@ -80,7 +80,7 @@ public class Fragment_Chart extends Fragment {
         cartesian.yAxis(0).title("Temperature (C)");
         cartesian.xAxis(0).labels().padding(5d, 5d, 5d, 5d);
 
-//        loadDataArray();
+//        loadDataArray();a
         seriesData.add(new CustomDataEntry("09-10", 32, 31));
         seriesData.add(new CustomDataEntry("10-10", 36, 29));
         seriesData.add(new CustomDataEntry("11-10", 36, 29));
