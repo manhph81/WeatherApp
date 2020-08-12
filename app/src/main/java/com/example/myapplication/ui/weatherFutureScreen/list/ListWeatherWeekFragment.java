@@ -1,7 +1,6 @@
-package com.example.myapplication.ui.Fragment;
+package com.example.myapplication.ui.weatherFutureScreen.list;
 
 import android.app.Fragment;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,9 +19,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.myapplication.ItemAdapter;
 import com.example.myapplication.R;
-import com.example.myapplication.Weather;
+import com.example.myapplication.model.Weather;
+import com.example.myapplication.ui.weatherFutureScreen.WeatherFutureActivity;
 
 
 import org.json.JSONArray;
@@ -33,67 +32,75 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class Fragment_ListWeatherWeek extends Fragment {
+public class ListWeatherWeekFragment extends Fragment {
     public static final String API_ID = "77780b9269d06ce0066641430cd0645d";
     private RecyclerView recyclerView;
-    private ItemAdapter itemAdapter;
+    private ItemWeatherWeekAdapter itemAdapter;
     private ArrayList arrayListWeatherWeek;
-    private static String lon,lat;
 
-    public static Fragment_ListWeatherWeek newInstance(Intent intent) {
+    public static ListWeatherWeekFragment newInstance() {
         Bundle args = new Bundle();
-        Fragment_ListWeatherWeek fragment = new Fragment_ListWeatherWeek();
-        lon = intent.getStringExtra("lon");
-        lat = intent.getStringExtra("lat");
+        ListWeatherWeekFragment fragment = new ListWeatherWeekFragment();
         fragment.setArguments(args);
 
         return fragment;
     }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         return inflater.inflate(R.layout.fragment_list, container, false);
     }
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         init(view);
-        getDataWeek(lon,lat);
+        if (getActivity() instanceof WeatherFutureActivity) {
+            String lat = ((WeatherFutureActivity) getActivity()).getLat();
+            String lon = ((WeatherFutureActivity) getActivity()).getLon();
+            getDataWeek(lon, lat);
+        }
 
     }
+
     @Override
     public void onResume() {
         super.onResume();
     }
+
     private void handleClick() {
     }
+
     private void init(View view) {
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         initRecyclerView();
     }
+
     protected void initRecyclerView() {
         recyclerView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext(),LinearLayoutManager.VERTICAL,false);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
-        DividerItemDecoration decoration = new DividerItemDecoration(getActivity().getApplicationContext(),linearLayoutManager.getOrientation());
+        DividerItemDecoration decoration = new DividerItemDecoration(getActivity().getApplicationContext(), linearLayoutManager.getOrientation());
         recyclerView.addItemDecoration(decoration);
         arrayListWeatherWeek = new ArrayList();
-        itemAdapter = new ItemAdapter(arrayListWeatherWeek,getActivity().getApplicationContext());
+        itemAdapter = new ItemWeatherWeekAdapter(arrayListWeatherWeek, getActivity().getApplicationContext());
         recyclerView.setAdapter(itemAdapter);
     }
-    private void getDataWeek(String lon,String lat){
+
+    private void getDataWeek(String lon, String lat) {
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        String url = "https://api.openweathermap.org/data/2.5/onecall?lat="+lat+"&lon="+lon+"&%20exclude=daily&appid="+API_ID;
+        String url = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&%20exclude=daily&appid=" + API_ID;
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("result",response);
+                        Log.d("result", response);
                         loadData(response);
                     }
                 },
-                new Response.ErrorListener(){
+                new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
 
@@ -107,12 +114,12 @@ public class Fragment_ListWeatherWeek extends Fragment {
             JSONObject jsonObject = new JSONObject(response);
 
             JSONArray jsonArrayList = jsonObject.getJSONArray("daily");
-            for (int i = 0; i < jsonArrayList.length() ; i++) {
+            for (int i = 0; i < jsonArrayList.length(); i++) {
                 JSONObject jsonObjectList = jsonArrayList.getJSONObject(i);
 
                 String day = jsonObjectList.getString("dt");
                 long l = Long.valueOf(day);
-                Date date = new Date(l*1000L);
+                Date date = new Date(l * 1000L);
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 SimpleDateFormat simpleDayFormat = new SimpleDateFormat("EEEE");
                 String Day = simpleDateFormat.format(date);
@@ -127,13 +134,13 @@ public class Fragment_ListWeatherWeek extends Fragment {
                 String max = jsonObjectTemp.getString("max");
                 String min = jsonObjectTemp.getString("min");
 
-                int a= (int) Math.round(Double.valueOf(max)-Double.valueOf(270));
-                int b= (int) Math.round(Double.valueOf(min)-Double.valueOf(270));
+                int a = (int) Math.round(Double.valueOf(max) - Double.valueOf(270));
+                int b = (int) Math.round(Double.valueOf(min) - Double.valueOf(270));
 
                 String tempMax = String.valueOf(a);
                 String tempMin = String.valueOf(b);
 
-                arrayListWeatherWeek.add(new Weather(Day,status,icon,tempMax,tempMin));
+                arrayListWeatherWeek.add(new Weather(Day, status, icon, tempMax, tempMin));
                 itemAdapter.notifyDataSetChanged();
             }
         } catch (JSONException e) {

@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.Fragment;
+package com.example.myapplication.ui.mainScreen.search;
 
 import android.app.Fragment;
 import android.database.Cursor;
@@ -31,7 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-public class Fragment_Search extends Fragment {
+public class SearchFragment extends Fragment {
     public static final String SQL_NAME = "weather.sqlite";
     public static final String API_ID = "77780b9269d06ce0066641430cd0645d";
 
@@ -39,11 +39,11 @@ public class Fragment_Search extends Fragment {
     Button btnOK;
     Database database;
 
-    public static Fragment_Search newInstance() {
+    public static SearchFragment newInstance() {
 
         Bundle args = new Bundle();
 
-        Fragment_Search fragment = new Fragment_Search();
+        SearchFragment fragment = new SearchFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -103,7 +103,7 @@ public class Fragment_Search extends Fragment {
             int a= (int) Math.round(Double.valueOf(maxTemp));
             int b= (int) Math.round(Double.valueOf(minTemp));
 
-            writeDatabase(city,status,icon,String.valueOf(a),String.valueOf(b));
+            writeDatabase(city,Day,status,icon,String.valueOf(a),String.valueOf(b));
 
 
         } catch (JSONException e) {
@@ -111,15 +111,15 @@ public class Fragment_Search extends Fragment {
         }
     }
 
-    private void writeDatabase(String city, String status, String icon, String maxTemp, String minTemp){
+    private void writeDatabase(String city,String date, String status, String icon, String maxTemp, String minTemp){
         database = new Database(getActivity(),SQL_NAME,null,1);
-        database.QueryData("CREATE TABLE IF NOT EXISTS Weather(City varchar(200) primary key ,Status varchar(200),Icon varchar(200),MaxTemp varchar(200),MinTemp varchar(200))");
+        database.QueryData("CREATE TABLE IF NOT EXISTS Weather(City varchar(200) primary key,Date varchar(200) ,Status varchar(200),Icon varchar(200),MaxTemp varchar(200),MinTemp varchar(200))");
         //Insert
         if(!isExistsCity(city)){
-            String sql = insertDatabase(city,status,icon,maxTemp,minTemp);
+            String sql = insertDatabase(city,date,status,icon,maxTemp,minTemp);
             database.QueryData(sql);
         }
-
+//        database.QueryData(delete());
         getActivity().onBackPressed();
     }
 
@@ -146,8 +146,8 @@ public class Fragment_Search extends Fragment {
         return result;
     }
 
-    private String insertDatabase(String city, String status, String image, String maxTemp, String minTemp){
-        String result="INSERT INTO Weather VALUES("+"\""+city+"\","+"\""+status+"\","+"\""+image+"\","+"\""+maxTemp+"\","+"\""+minTemp+"\""+")";
+    private String insertDatabase(String city,String date, String status, String image, String maxTemp, String minTemp){
+        String result="INSERT INTO Weather VALUES("+"\""+city+"\","+"\""+date+"\","+"\""+status+"\","+"\""+image+"\","+"\""+maxTemp+"\","+"\""+minTemp+"\""+")";
         return result;
     }
 

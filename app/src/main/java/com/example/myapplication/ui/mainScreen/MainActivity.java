@@ -9,10 +9,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.myapplication.ui.Fragment.Fragment_ListWeather;
-import com.example.myapplication.ui.Fragment.Fragment_Search;
 import com.example.myapplication.R;
 import com.example.myapplication.ui.BaseActivity;
+import com.example.myapplication.ui.mainScreen.list.ListWeatherFragment;
+import com.example.myapplication.ui.mainScreen.search.SearchFragment;
 
 public class MainActivity extends BaseActivity {
 
@@ -22,7 +22,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
-        addFragment(R.id.frameContent, Fragment_ListWeather.newInstance(),false);
+        addFragment(R.id.frameContent, ListWeatherFragment.newInstance(),false);
     }
 
     private void initView() {
@@ -38,7 +38,7 @@ public class MainActivity extends BaseActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.newWeather:
-                replaceFragment(R.id.frameContent, Fragment_Search.newInstance(),true);
+                replaceFragment(R.id.frameContent, SearchFragment.newInstance(),true);
                 Toast.makeText(this,"New",Toast.LENGTH_SHORT).show();
                 break;
             case R.id.help:

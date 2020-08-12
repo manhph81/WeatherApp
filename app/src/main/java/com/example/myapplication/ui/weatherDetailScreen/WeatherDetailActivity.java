@@ -31,42 +31,42 @@ import java.util.Date;
 
 
 public class WeatherDetailActivity extends BaseActivity {
-    Button btnWeatherFuture;
-    TextView txtCity, txtState, txtTemperature, txtHumidity, txtCloud, txtWind, txtDate;
-    ImageView imgIcon;
-    String city;
-    String lon="";
-    String lat="";
+    private Button btnWeatherFuture;
+    private TextView txtCity, txtState, txtTemperature, txtHumidity, txtCloud, txtWind, txtDate;
+    private ImageView imgIcon;
+    private String lon = "";
+    private String lat = "";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.weather_detail);
         init();
-        city = getDataIntentCity();
-        getCurrentWeatherDataOneDay(city);
+        getCurrentWeatherDataOneDay(getDataIntentCity());
         handleClick();
     }
-    private void loadData(String response){
+
+    private void loadData(String response) {
         try {
             JSONObject jsonObject = new JSONObject(response);
             String city = jsonObject.getString("name");
-            txtCity.setText("City: "+getString(R.string.tab)+getString(R.string.tab)+city);
+
             //format Date
             String day = jsonObject.getString("dt");
             long l = Long.valueOf(day);
-            Date date = new Date(l*1000L);
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE yyyy-MM-dd HH-mm-ss");
+            Date date = new Date(l * 1000L);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
             String Day = simpleDateFormat.format(date);
-            txtDate.setText(Day);
+
             //load Array Weather
             JSONArray jsonArrayWeather = jsonObject.getJSONArray("weather");
             JSONObject jsonObjectWeather = jsonArrayWeather.getJSONObject(0);
             String status = jsonObjectWeather.getString("main");
             String icon = jsonObjectWeather.getString("icon");
-            txtState.setText("Status:"+getString(R.string.tab) + status);
+
             //load Image
-            Glide.with(this).load("http://openweathermap.org/img/wn/"+icon+".png").into(imgIcon);
+
 
             //load data Temp - Hum
             JSONObject jsonObjectMain = jsonObject.getJSONObject("main");
@@ -76,43 +76,54 @@ public class WeatherDetailActivity extends BaseActivity {
             Double a = Double.valueOf(temperature);
             String temperatureFinal = String.valueOf(a.intValue());
 
-            txtTemperature.setText(temperatureFinal+"°C");
-            txtHumidity.setText(humidity+"%");
             // load Wind - Cloud
             JSONObject jsonObjectWind = jsonObject.getJSONObject("wind");
             String wind = jsonObjectWind.getString("speed");
-            txtWind.setText(wind+"m/s");
+
             JSONObject jsonObjectClouds = jsonObject.getJSONObject("clouds");
             String cloud = jsonObjectClouds.getString("all");
-            txtCloud.setText(cloud+"%");
+
 
             JSONObject jsonObjectCoord = jsonObject.getJSONObject("coord");
             lon = jsonObjectCoord.getString("lon");
             lat = jsonObjectCoord.getString("lat");
 
+            setView(city, Day, status, icon, temperatureFinal, humidity, wind, cloud);
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
-    private void getCurrentWeatherDataOneDay(String data){
+
+    private void setView(String city, String day, String status, String icon, String temperatureFinal, String humidity, String wind, String cloud) {
+        txtCity.setText("City: " + getString(R.string.tab) + getString(R.string.tab) + city);
+        txtDate.setText(day);
+        txtState.setText("Status:" + getString(R.string.tab) + status);
+        txtTemperature.setText(temperatureFinal + "°C");
+        txtHumidity.setText(humidity + "%");
+        txtWind.setText(wind + "m/s");
+        txtCloud.setText(cloud + "%");
+        Glide.with(this).load("http://openweathermap.org/img/wn/" + icon + ".png").into(imgIcon);
+    }
+
+    private void getCurrentWeatherDataOneDay(String data) {
         RequestQueue requestQueue = Volley.newRequestQueue(WeatherDetailActivity.this);
-        String url = "http://api.openweathermap.org/data/2.5/weather?q="+data+"&units=metric&appid="+API_ID;
+        String url = "http://api.openweathermap.org/data/2.5/weather?q=" + data + "&units=metric&appid=" + API_ID;
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("city",response);
                         loadData(response);
                     }
                 },
-                new Response.ErrorListener(){
+                new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(WeatherDetailActivity.this,"City is not found.",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(WeatherDetailActivity.this, "City is not found.", Toast.LENGTH_SHORT).show();
                     }
                 });
         requestQueue.add(stringRequest);
     }
+
     private void init() {
         btnWeatherFuture = (Button) findViewById(R.id.btnWeatherFuture);
         txtCity = (TextView) findViewById(R.id.textViewCity);
@@ -124,22 +135,24 @@ public class WeatherDetailActivity extends BaseActivity {
         txtDate = (TextView) findViewById(R.id.textViewDate);
         imgIcon = (ImageView) findViewById(R.id.imageView);
     }
+
     private void handleClick() {
-        btnWeatherFuture.setOnClickListener(new View.OnClickListener(){
+        btnWeatherFuture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(WeatherDetailActivity.this, WeatherFutureActivity.class);
-                intent.putExtra("city",city);
-                intent.putExtra("lon",lon);
-                intent.putExtra("lat",lat);
+                intent.putExtra("city", getDataIntentCity());
+                intent.putExtra("lon", lon);
+                intent.putExtra("lat", lat);
                 startActivity(intent);
             }
         });
     }
+
     private String getDataIntentCity() {
         Intent intent = getIntent();
         String data = intent.getStringExtra("city");
-        if(data==""){
+        if (data == "") {
             data = DEFAULT_CITY;
         }
         return data;
